@@ -1,0 +1,356 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------------------------------------------------------------------------
+   Theme tokens
+   ------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf9;
+  --bg-elevated: #ffffff;
+  --bg-sunken: #f2f1ef;
+  --fg: #0a0a0b;
+  --fg-muted: #5b5b66;
+  --border: #e6e6ea;
+  --border-strong: #cfcfd6;
+  --accent: #6d28d9;
+  --accent-strong: #5b21b6;
+  --accent-soft: rgba(109, 40, 217, 0.08);
+  --accent-glow: rgba(109, 40, 217, 0.18);
+  --on-accent: #ffffff;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0a0a0b;
+  --bg-elevated: #131316;
+  --bg-sunken: #0e0e10;
+  --fg: #ededef;
+  --fg-muted: #8b8b94;
+  --border: #23232a;
+  --border-strong: #34343d;
+  --accent: #a78bfa;
+  --accent-strong: #8b5cf6;
+  --accent-soft: rgba(139, 92, 246, 0.1);
+  --accent-glow: rgba(139, 92, 246, 0.35);
+  --on-accent: #0a0a0b;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------------- */
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@utility shell {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (min-width: 640px) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+/* Animated underline for text links */
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.4s var(--ease-out-expo);
+  &:hover {
+    background-size: 100% 1px;
+  }
+}
+
+/* Custom cursor: hide the native one only while the custom cursor is active. */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none;
+}
+html.has-custom-cursor :is(input, textarea, [contenteditable="true"]) {
+  cursor: text;
+}
+
+/* ---------------------------------------------------------------------------
+   Hero gradient mesh
+   ------------------------------------------------------------------------- */
+.mesh-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.55;
+  will-change: transform;
+}
+[data-theme="light"] .mesh-blob {
+  opacity: 0.35;
+}
+@keyframes drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(8%, 6%, 0) scale(1.12); }
+}
+@keyframes drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-10%, -4%, 0) scale(0.92); }
+}
+@keyframes drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); }
+  50% { transform: translate3d(5%, -8%, 0) scale(1.1); }
+}
+
+@keyframes pulse-dot {
+  0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  70% { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ---------------------------------------------------------------------------
+   Long-form (MDX) typography
+   ------------------------------------------------------------------------- */
+.prose-editorial {
+  max-width: 68ch;
+  color: var(--fg);
+}
+.prose-editorial > * + * {
+  margin-top: 1.25em;
+}
+.prose-editorial h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  margin-top: 2.5em;
+  letter-spacing: -0.01em;
+}
+.prose-editorial h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 2em;
+}
+.prose-editorial p,
+.prose-editorial li {
+  color: color-mix(in srgb, var(--fg) 86%, var(--fg-muted));
+}
+.prose-editorial a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.prose-editorial ul {
+  list-style: none;
+  padding-left: 0;
+}
+.prose-editorial ul > li {
+  position: relative;
+  padding-left: 1.4em;
+}
+.prose-editorial ul > li + li {
+  margin-top: 0.5em;
+}
+.prose-editorial ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2em;
+  top: 0.72em;
+  width: 0.45em;
+  height: 1px;
+  background: var(--accent);
+}
+.prose-editorial ol {
+  list-style: decimal;
+  padding-left: 1.4em;
+}
+.prose-editorial ol > li::marker {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: 0.85em;
+}
+.prose-editorial strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+.prose-editorial em {
+  font-family: var(--font-serif);
+  font-size: 1.1em;
+}
+.prose-editorial code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.prose-editorial pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+.prose-editorial pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.prose-editorial blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.25em;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.4;
+}
+.prose-editorial table {
+  width: 100%;
+  font-size: 0.9rem;
+  border-collapse: collapse;
+}
+.prose-editorial th,
+.prose-editorial td {
+  text-align: left;
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.prose-editorial th {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  font-weight: 500;
+}
+.prose-editorial hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin-block: 3em;
+}
+
+/* ---------------------------------------------------------------------------
+   View transitions (React <ViewTransition>)
+   ------------------------------------------------------------------------- */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-old(.page-out) {
+  animation: 160ms ease-in both vt-fade reverse, 160ms ease-in both vt-lift reverse;
+}
+::view-transition-new(.page-in) {
+  animation: 260ms var(--ease-out-expo) 120ms both vt-fade, 420ms var(--ease-out-expo) both vt-rise;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: 450ms;
+  animation-timing-function: var(--ease-out-expo);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: vt-via-blur;
+}
+
+@keyframes vt-fade {
+  from { opacity: 0; filter: blur(2px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@keyframes vt-rise {
+  from { transform: translateY(14px); }
+  to { transform: translateY(0); }
+}
+@keyframes vt-lift {
+  from { transform: translateY(-6px); }
+  to { transform: translateY(0); }
+}
+@keyframes vt-via-blur {
+  30% { filter: blur(3px); }
+}
+
+/* Theme switch: circular reveal from the toggle button. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

@@ -1,0 +1,22 @@
+{/* TODO(Bhargav): confirm with Namo that these details are OK to share publicly. */}
+
+<TLDR>
+- Built and deployed a pipeline that syncs NetSuite ERP transactions into Google Cloud SQL every day.
+- Cut manual reporting effort by **90%**.
+- Designed staging databases that make ERP data usable for downstream analytics and AI/BI work.
+</TLDR>
+
+<Metrics items={[{ label: "Manual reporting", value: "−90%" }, { label: "Sync cadence", value: "Daily" }]} />
+
+## The problem
+
+Business data lived inside NetSuite, and getting it into a form analysts could query meant manual exports and spreadsheet work every reporting cycle.
+
+## What I built
+
+- **Extraction:** NetSuite RESTlet APIs, authenticated with OAuth 1.0 request signing.
+- **Load:** Python jobs that write into MySQL on Google Cloud SQL.
+- **Scheduling:** Google Cloud Scheduler runs the sync daily, so no one has to remember to.
+- **Modeling:** staging tables designed and optimized for faster ERP analysis and as a clean base for AI/BI applications.
+
+Done during my Software Engineering Intern role at Namo Cloud Solutions (Denver, summer 2025).

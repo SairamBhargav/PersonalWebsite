@@ -1,0 +1,28 @@
+{/* TODO(Bhargav): add screenshots/GIF, repo + live links in content/projects.ts, and verify the details below. */}
+
+<TLDR>
+- A full-stack movie discovery app. Swipe right or left on movies to build a personalized watchlist.
+- **Swipe Sessions** let a group swipe together and match on the movies everyone wants to watch.
+- Generative AI (Gemini, OpenAI) turns swipe history into personalized recommendations.
+</TLDR>
+
+## The problem
+
+Picking a movie alone is easy. Picking one with friends turns into twenty minutes of scrolling and "I don't mind, you choose." MatchFlix turns that into a quick, low-stakes game.
+
+## How it works
+
+- **Swipe to rate.** Movies come from the TMDB API. Likes and dislikes are stored per user and feed a personal watchlist.
+- **Swipe Sessions.** Several users join a shared session and swipe on the same pool. Matching logic in PostgreSQL finds the movies the group agrees on.
+- **AI recommendations.** A user's swipe behavior is summarized and sent to Gemini / OpenAI, which suggests what to watch next.
+- **API and deployment.** A RESTful Express API with authentication, containerized with Docker so development and deployment behave the same.
+
+## Stack
+
+Node.js · Express · PostgreSQL · Docker · TMDB API · Gemini API · OpenAI API
+
+## What I learned
+
+{/* TODO(Bhargav): 2–3 honest takeaways, e.g. modeling shared session state, prompt design for recommendations, handling API rate limits. */}
+
+Building the group feature meant thinking about shared state (many users writing to one session at once) rather than a single user's data, and designing the schema around that from the start.

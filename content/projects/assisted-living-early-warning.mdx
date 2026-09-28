@@ -1,0 +1,25 @@
+{/* TODO(Bhargav): add the paper's title, venue, year and link (also in content/profile.ts → publications). */}
+
+<TLDR>
+- ML models that predict resident behaviors and health risks in assisted-living facilities.
+- A prototype **early-warning system** that flags potential incidents (falls, deteriorating health) so caregivers can step in early.
+- Validated with caregivers and healthcare staff, and written up as a **published research paper**.
+</TLDR>
+
+## Context
+
+I did this work as a Machine Learning & Research Intern at Navjoy (Golden, CO) from March 2022 to February 2023, while still in high school.
+
+## Approach
+
+- **Data.** Health and activity data from assisted-living residents, analyzed together with caregivers to understand which signals actually precede incidents.
+- **Models.** Decision-tree classifiers (scikit-learn), chosen partly because their decision paths can be explained to non-technical staff.
+- **Early warning.** A prototype that turns model outputs into flags a caregiver can act on, rather than raw probabilities.
+
+## Working with domain experts
+
+The most important part of the project happened away from the code. Reviewing predictions with caregivers and staff showed which flags were clinically meaningful and which were noise. That feedback shaped both the features and the thresholds.
+
+## Publication
+
+The work was written up and published as a research paper that translates theoretical ML methods into practical healthcare applications.

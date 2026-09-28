@@ -1,0 +1,31 @@
+{/* TODO(Bhargav): verify the pipeline details below against your code, and add a photo/GIF (blur other members' faces). */}
+
+<TLDR>
+- Automated attendance for KTP meetings: a camera checks members in instead of a sign-in sheet.
+- Detection and identity verification with OpenCV and the `face-recognition` library.
+- Up to **80%** faster and more accurate than the manual sign-in it replaced.
+</TLDR>
+
+<Metrics items={[{ label: "Faster attendance", value: "up to 80%" }]} />
+
+## The problem
+
+Manual sign-in at chapter meetings was slow and error-prone, and the records still had to be cleaned up afterward.
+
+## How it works
+
+1. **Enrollment.** Each member's reference photo is encoded into a face embedding once.
+2. **Detection.** OpenCV reads frames from the camera, and faces are located in each frame.
+3. **Verification.** Each detected face is embedded and compared against the enrolled set. The closest match under a distance threshold is accepted.
+4. **Logging.** Recognized members are written to an attendance record with Pandas, ready to export.
+
+## Try the first stage
+
+The demo below rebuilds just the **detection** stage for the browser with a tiny BlazeFace model. By design, it doesn't identify anyone. Recognition requires enrolled face data, and that doesn't belong on a public website.
+
+<FaceDemo />
+
+## Trade-offs
+
+- **Privacy.** Face data is sensitive. Embeddings rather than raw photos, local processing, and opt-in enrollment matter as much as accuracy.
+- **Threshold tuning.** A strict threshold rejects real members in bad lighting; a loose one accepts look-alikes. The right setting depends on the room and the camera.

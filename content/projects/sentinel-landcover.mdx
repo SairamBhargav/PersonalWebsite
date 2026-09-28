@@ -1,0 +1,47 @@
+<TLDR>
+- Fine-tuned an ImageNet ResNet-18 to classify Sentinel-2 satellite tiles into 10 land-cover classes (EuroSAT).
+- Exported to ONNX with an **in-graph class activation map**, then quantized to **int8** so it runs client-side in a Web Worker.
+- Every number on this page is written by the evaluation script, and none are typed in by hand.
+</TLDR>
+
+## Why build this
+
+My internship work involves satellite imagery I can't share publicly. This project uses the same core skills (multispectral imagery, transfer learning, careful evaluation, deployment) on open data, so anyone can poke at the result.
+
+The goal wasn't the highest possible accuracy on a well-studied benchmark. It was to take a model **all the way to a place where a stranger can use it**, in a browser tab with no server, and to be honest about what it can and can't do.
+
+<EurosatDemo />
+
+## Data
+
+[EuroSAT](https://github.com/phelber/EuroSAT) is 27,000 labeled 64×64 RGB tiles from ESA's Sentinel-2 satellite, covering 10 land-cover classes across 34 European countries. I use a **stratified 80/10/10 split** with a fixed seed. The validation set picks the checkpoint, and the test set is touched exactly once.
+
+<Callout title="A caveat worth stating">
+EuroSAT's RGB release doesn't ship tile coordinates, so this is a random split, not a spatial one. Neighboring tiles can land in both train and test, which inflates accuracy relative to deploying on a new region. In my geospatial work I use spatial cross-validation for exactly this reason. Treat the numbers below as an upper bound.
+</Callout>
+
+## Model
+
+- **Backbone:** ResNet-18 initialized from ImageNet, the whole network fine-tuned.
+- **Input:** tiles upsampled to 128×128, with the stem max-pool removed so the final feature map is **8×8** instead of 4×4. That's the resolution of the attention heatmap, so it matters for the demo.
+- **Augmentation:** random 90° rotations and flips (satellite tiles have no canonical "up") plus mild color jitter.
+- **Training:** AdamW, one-cycle LR schedule, label smoothing 0.1, bf16 autocast.
+
+## Shipping it to the browser
+
+1. **ONNX export with two outputs.** Besides `logits`, the graph computes a class activation map ([Zhou et al., 2016](https://arxiv.org/abs/1512.04150)). The final conv features are weighted by the classifier weights for each class. The heatmap costs one extra einsum and no second pass.
+2. **Static int8 quantization** (QDQ, per-channel weights) calibrated on 300 training tiles. This makes the model ~4× smaller with a negligible accuracy change (see below).
+3. **Web Worker + ONNX Runtime Web (WASM).** Inference runs off the main thread, so the page never janks. The model downloads with a progress bar, then the browser caches it.
+4. **Vegetation view.** Real NDVI needs the near-infrared band, which RGB tiles don't have. The demo computes VARI, an RGB-only proxy, and labels it as such.
+
+## Results
+
+<EurosatResults />
+
+## What I'd do next
+
+- Train on all **13 spectral bands** (EuroSAT-MS) with a modified first conv, to compare RGB-only against multispectral.
+- Rerun with a **spatially blocked split** to measure how much the random split overstates accuracy.
+- Try the WebGPU execution provider for fp16 inference on capable devices.
+
+{/* TODO(Bhargav): after you run ml/eurosat/train.py yourself, add a sentence here on anything that surprised you. */}
